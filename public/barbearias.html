@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin • Barbearias</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+<body class="admin-bg">
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="card glass-card border-0 shadow-sm sidebar-card animate__animated animate__fadeInLeft">
+        <div class="d-flex align-items-center gap-3">
+          <div class="brand-badge"><i class="fa-solid fa-scissors"></i></div>
+          <div>
+            <div class="brand-title">thynkBarber</div>
+            <div class="text-muted small">Painel administrativo</div>
+          </div>
+        </div>
+
+        <div class="user-chip">
+          <div class="label">Usuário:</div>
+          <div class="value" id="adminUsername">carregando...</div>
+        </div>
+
+        <div class="side-sep"></div>
+
+        <div class="side-subtitle">Navegação</div>
+        <nav class="navlist">
+          <a class="navitem" href="/dashboard.html">
+            <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+          </a>
+        </nav>
+
+        <div class="side-subtitle">Gerenciamento</div>
+        <nav class="navlist">
+          <a class="navitem active" href="/barbearias.html">
+            <i class="fa-solid fa-shop"></i><span>Barbearias</span>
+          </a>
+          <a class="navitem" href="/planos.html">
+            <i class="fa-solid fa-layer-group"></i><span>Planos</span>
+          </a>
+        </nav>
+
+        <div class="mt-auto">
+          <div class="side-sep"></div>
+          <button id="btnLogout" class="btn btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-2">
+            <i class="fa-solid fa-right-from-bracket"></i><span>Sair do painel</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-area">
+      <div class="card glass-card border-0 shadow-sm panel animate__animated animate__fadeInUp">
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+          <div>
+            <h1 class="page-title mb-1">Gerenciamento de Barbearias</h1>
+            <p class="page-sub">Aqui você gerencia e edita suas barbearias</p>
+          </div>
+
+          <button id="btnNewShop" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fa-solid fa-plus"></i><span>Adicionar nova barbearia</span>
+          </button>
+        </div>
+
+        <hr class="my-3" style="opacity:.12;">
+
+        <div class="row g-3">
+          <!-- Tabela -->
+          <div class="col-12">
+            <div class="card glass-card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-table-list text-primary"></i>
+                    <strong>Barbearias cadastradas</strong>
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <span class="badge soft-badge" id="shopsCount">0 barbearias</span>
+                    <span class="badge soft-badge" id="shopsActiveCount">0 ativas</span>
+                  </div>
+                </div>
+
+                <div class="table-responsive" style="overflow-x:auto;">
+                  <table class="table align-middle mb-0">
+                    <thead>
+                      <tr class="text-muted small">
+                        <th style="min-width:90px;">Código</th>
+                        <th style="min-width:180px;">Nome</th>
+                        <th style="min-width:160px;">Responsável</th>
+                        <th style="min-width:120px;">Criada em</th>
+                        <th style="min-width:160px;">Plano</th>
+                        <th class="text-end" style="min-width:120px;">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody id="shopsTbody">
+                      <tr><td colspan="6" class="text-muted">Carregando...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="mt-2 text-muted small">
+                  Ações: <b>Editar</b> | <b>Ativar/Desativar</b> | <b>Excluir</b>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráficos -->
+          <div class="col-12 col-xl-6">
+            <div class="card glass-card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-primary"></i>
+                    <strong>Barbearias por plano</strong>
+                  </div>
+                </div>
+                <div style="height:260px;width:100%;">
+                  <canvas id="donutPlans"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-xl-6">
+            <div class="card glass-card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-primary"></i>
+                    <strong>Meses com mais barbearias</strong>
+                  </div>
+                  <span class="badge soft-badge" id="yearBadge">Ano: —</span>
+                </div>
+                <div style="height:260px;width:100%;">
+                  <canvas id="lineShops"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal 3 steps -->
+      <div class="modal fade" id="shopModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content glass-card border-0 shadow-lg">
+            <div class="modal-header border-0 align-items-start">
+              <div class="d-flex align-items-center gap-3">
+                <div class="brand-badge"><i class="fa-solid fa-shop"></i></div>
+                <div>
+                  <h5 class="modal-title mb-0">Adicionar nova barbearia</h5>
+                  <div class="text-muted small" id="shopStepHint">Step 01 • Dados da barbearia</div>
+                </div>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+              <div class="modal-progress mb-3">
+                <div class="progress" style="height: 10px;">
+                  <div class="progress-bar" id="shopStepProgress" role="progressbar" style="width: 33%;"></div>
+                </div>
+
+                <div class="stepper mt-2">
+                  <button type="button" class="stepper-item active" id="shopStepBtn1">
+                    <span class="dot">1</span>
+                    <span class="txt"><b>Dados</b><small class="text-muted d-block">CNPJ, contato</small></span>
+                  </button>
+                  <button type="button" class="stepper-item" id="shopStepBtn2">
+                    <span class="dot">2</span>
+                    <span class="txt"><b>Endereço</b><small class="text-muted d-block">CEP automático</small></span>
+                  </button>
+                  <button type="button" class="stepper-item" id="shopStepBtn3">
+                    <span class="dot">3</span>
+                    <span class="txt"><b>Membros</b><small class="text-muted d-block">Plano e faturamento</small></span>
+                  </button>
+                </div>
+              </div>
+
+              <div id="shopAlert" class="alert d-none"></div>
+
+              <div class="row g-3">
+                <div class="col-12 col-lg-8">
+                  <form id="shopForm" autocomplete="off">
+                    <!-- Step 1 -->
+                    <section id="shopStep1" class="step-section">
+                      <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">CNPJ</label>
+                          <input class="form-control form-control-lg" name="cnpj" placeholder="00.000.000/0000-00" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">Nome fantasia</label>
+                          <input class="form-control form-control-lg" name="tradeName" required placeholder="Ex: Barbearia Amaral" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">Telefone</label>
+                          <input class="form-control form-control-lg" name="phone" placeholder="(11) 99999-9999" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">E-mail</label>
+                          <input class="form-control form-control-lg" name="email" placeholder="contato@..." />
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Step 2 -->
+                    <section id="shopStep2" class="step-section d-none">
+                      <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                          <label class="form-label">CEP (auto preenchimento)</label>
+                          <input class="form-control form-control-lg" name="cep" id="cep" placeholder="00000-000" />
+                          <div class="form-text">Digite o CEP e saia do campo.</div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                          <label class="form-label">Estado</label>
+                          <input class="form-control form-control-lg" name="state" id="state" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                          <label class="form-label">Cidade</label>
+                          <input class="form-control form-control-lg" name="city" id="city" />
+                        </div>
+                        <div class="col-12 col-md-7">
+                          <label class="form-label">Logradouro</label>
+                          <input class="form-control form-control-lg" name="street" id="street" />
+                        </div>
+                        <div class="col-12 col-md-5">
+                          <label class="form-label">Número</label>
+                          <input class="form-control form-control-lg" name="number" />
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label">Complemento</label>
+                          <input class="form-control form-control-lg" name="complement" placeholder="Opcional" />
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Step 3 -->
+                    <section id="shopStep3" class="step-section d-none">
+                      <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">Quantidade de membros</label>
+                          <input type="number" min="0" class="form-control form-control-lg" name="membersQty" value="0" />
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">Faturamento médio</label>
+                          <div class="input-group input-group-lg">
+                            <span class="input-group-text">R$</span>
+                            <input type="number" min="0" step="0.01" class="form-control" name="avgRevenue" value="0" />
+                          </div>
+                        </div>
+
+                        <div class="col-12">
+                          <label class="form-label">Plano</label>
+                          <select class="form-select form-select-lg" name="planId" id="planId">
+                            <option value="">Sem plano</option>
+                          </select>
+                          <div class="form-text">O plano define o cargo (Role) da barbearia.</div>
+                        </div>
+                      </div>
+                    </section>
+                  </form>
+                </div>
+
+                <!-- Resumo -->
+                <div class="col-12 col-lg-4">
+                  <div class="card glass-card border-0 shadow-sm sticky-summary">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-link text-primary"></i>
+                        <b>Acesso gerado</b>
+                      </div>
+
+                      <div class="summary-block">
+                        <div class="text-muted small">Usuário</div>
+                        <div class="fw-semibold" id="shopSumUser">barbearia_nome</div>
+                      </div>
+
+                      <div class="summary-block mt-2">
+                        <div class="text-muted small">Senha inicial</div>
+                        <div class="fw-semibold">thynk@2025(barbearia)</div>
+                        <div class="text-muted small mt-1">No primeiro login será obrigatório alterar.</div>
+                      </div>
+
+                      <div class="summary-block mt-2">
+                        <div class="text-muted small">Link de acesso</div>
+                        <div class="fw-semibold" id="shopSumLink">/barbearia-login.html</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="modal-footer border-0">
+              <button class="btn btn-outline-primary" id="shopPrev" type="button" disabled>
+                <i class="fa-solid fa-arrow-left me-2"></i>Voltar
+              </button>
+              <button class="btn btn-primary" id="shopNext" type="button">
+                Próximo <i class="fa-solid fa-arrow-right ms-2"></i>
+              </button>
+              <button class="btn btn-primary d-none" id="shopSave" type="button">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar Barbearia
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script src="/assets/js/admin-shell.js"></script>
+  <script src="/assets/js/barbearias.js"></script>
+</body>
+</html>
